@@ -1,9 +1,8 @@
 name: Build and Push to Azure Container Registry
 
 on:
-  workflow_dispatch:  # 👈 this lets you run it manually
   push:
-    branches: [ master ]
+    branches: [ master ]  # Use 'main' if your branch is named 'main'
 
 jobs:
   build-and-push:
