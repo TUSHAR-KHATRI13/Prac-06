@@ -2,7 +2,7 @@ name: Build and Deploy to AKS
 
 on:
   push:
-    branches: [ master ]  # or 'main'
+    branches: [ master ]
 
 jobs:
   build-and-deploy:
@@ -33,6 +33,7 @@ jobs:
 
     - name: Build and push image to ACR
       run: |
+        export DOCKER_BUILDKIT=0
         docker build -t $REGISTRY_URL/$IMAGE_NAME:$VERSION .
         docker push $REGISTRY_URL/$IMAGE_NAME:$VERSION
 
