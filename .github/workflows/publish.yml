@@ -52,6 +52,6 @@ jobs:
       run: chmod +x ./deploy.sh
 
     - name: Deploy to AKS
-      run: ./deploy.sh
-      env:
-        KUBECONFIG: ${{ github.workspace }}/kubeconfig
+      run: |
+        export KUBECONFIG=${{ github.workspace }}/kubeconfig
+        ./deploy.sh
