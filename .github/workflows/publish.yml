@@ -2,7 +2,7 @@ name: Build and Deploy to AKS
 
 on:
   push:
-    branches: [ master ]  # Change to 'main' if your branch is named 'main'
+    branches: [ master ]  # Change to 'main' if needed
 
 jobs:
   build-and-deploy:
@@ -10,6 +10,7 @@ jobs:
     env:
       VERSION: v1.0.0
       IMAGE_NAME: arithmetic-service
+      REGISTRY_URL: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
 
     steps:
     - name: Checkout code
@@ -28,16 +29,12 @@ jobs:
       run: mvn test
 
     - name: Log in to Azure Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-        username: ${{ secrets.AZURE_USERNAME }}
-        password: ${{ secrets.AZURE_PASSWORD }}
+      run: echo "${{ secrets.AZURE_PASSWORD }}" | docker login $REGISTRY_URL -u ${{ secrets.AZURE_USERNAME }} --password-stdin
 
     - name: Build and push image to ACR
       run: |
-        docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/$IMAGE_NAME:$VERSION .
-        docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/$IMAGE_NAME:$VERSION
+        docker build -t $REGISTRY_URL/$IMAGE_NAME:$VERSION ./    # FIXED: added './' for build context
+        docker push $REGISTRY_URL/$IMAGE_NAME:$VERSION
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
