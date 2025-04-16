@@ -29,11 +29,11 @@ jobs:
       run: mvn test
 
     - name: Log in to Azure Container Registry
-      run: echo "${{ secrets.AZURE_PASSWORD }}" | docker login $REGISTRY_URL -u ${{ secrets.AZURE_USERNAME }} --password-stdin
+      run: echo "${{ secrets.AZURE_PASSWORD }}" | docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.AZURE_USERNAME }} --password-stdin
 
     - name: Build and push image to ACR
       run: |
-        export DOCKER_BUILDKIT=0
+        echo "Building Docker image..."
         docker build -t $REGISTRY_URL/$IMAGE_NAME:$VERSION .
         docker push $REGISTRY_URL/$IMAGE_NAME:$VERSION
 
