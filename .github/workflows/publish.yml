@@ -10,7 +10,6 @@ jobs:
     env:
       VERSION: v1.0.0
       IMAGE_NAME: arithmetic-service
-      REGISTRY_URL: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
 
     steps:
     - name: Checkout code
@@ -29,13 +28,12 @@ jobs:
       run: mvn test
 
     - name: Log in to Azure Container Registry
-      run: echo "${{ secrets.AZURE_PASSWORD }}" | docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.AZURE_USERNAME }} --password-stdin
+      run: echo "${{ secrets.AZURE_PASSWORD }}" | docker login practicum07registry.azurecr.io -u Practicum07Registry --password-stdin
 
     - name: Build and push image to ACR
       run: |
-        echo "Building Docker image..."
-        docker build -t $REGISTRY_URL/$IMAGE_NAME:$VERSION .
-        docker push $REGISTRY_URL/$IMAGE_NAME:$VERSION
+        docker build -t practicum07registry.azurecr.io/arithmetic-service:$VERSION .
+        docker push practicum07registry.azurecr.io/arithmetic-service:$VERSION
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
