@@ -2,7 +2,7 @@ name: Build and Deploy to AKS
 
 on:
   push:
-    branches: [ master ]  # Change to 'main' if needed
+    branches: [ master ]  # or 'main'
 
 jobs:
   build-and-deploy:
@@ -33,7 +33,7 @@ jobs:
 
     - name: Build and push image to ACR
       run: |
-        docker build -t $REGISTRY_URL/$IMAGE_NAME:$VERSION ./    # FIXED: added './' for build context
+        docker build -t $REGISTRY_URL/$IMAGE_NAME:$VERSION .
         docker push $REGISTRY_URL/$IMAGE_NAME:$VERSION
 
     - name: Set up kubectl
