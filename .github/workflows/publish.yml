@@ -28,23 +28,30 @@ jobs:
       run: mvn test
 
     - name: Log in to Azure Container Registry
-      run: echo "${{ secrets.AZURE_PASSWORD }}" | docker login practicum07registry.azurecr.io -u Practicum07Registry --password-stdin
+      uses: azure/docker-login@v1
+      with:
+        login-server: practicum07registry.azurecr.io
+        username: ${{ secrets.AZURE_USERNAME }}
+        password: ${{ secrets.AZURE_PASSWORD }}
 
     - name: Build and push image to ACR
       run: |
-        docker build -t practicum07registry.azurecr.io/arithmetic-service:$VERSION .
-        docker push practicum07registry.azurecr.io/arithmetic-service:$VERSION
+        docker build -t practicum07registry.azurecr.io/$IMAGE_NAME:$VERSION .
+        docker push practicum07registry.azurecr.io/$IMAGE_NAME:$VERSION
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
 
     - name: Set kubeconfig from secret
       run: |
-        echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > kubeconfig
-        export KUBECONFIG=$PWD/kubeconfig
+        echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ${{ github.workspace }}/kubeconfig
+      env:
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     - name: Make deploy.sh executable
       run: chmod +x ./deploy.sh
 
     - name: Deploy to AKS
       run: ./deploy.sh
+      env:
+        KUBECONFIG: ${{ github.workspace }}/kubeconfig
